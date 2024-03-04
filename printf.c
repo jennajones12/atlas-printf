@@ -13,14 +13,6 @@
  */
 
 #include <unistd.h>
-
-/**
- * _putchar - writes the character c to stdout
- * @c: The character to print
- *
- * Return: On success 1.
- * On error, -1 is returned, and errno is set appropriately.
- */
 void print_unsigned_int(unsigned int num, int *count) {
     unsigned int temp = num;
     int digits = 1;
@@ -43,8 +35,8 @@ void print_octal(unsigned int num, int *count) {
     }
 }
 
-void print_hexadecimal(unsigned int num, int *count, int uppercase) {
-    unsigned int temp = num;
+void print_hexadecimal_helper(unsigned long num, int *count, int uppercase) {
+    unsigned long temp = num;
     int digits = 1;
     while (temp /= 16) digits *= 16;
     while (digits) {
@@ -55,16 +47,19 @@ void print_hexadecimal(unsigned int num, int *count, int uppercase) {
     }
 }
 
-void print_pointer(void *p_addr, int *count)
-{
+void print_hexadecimal(unsigned int num, int *count, int uppercase) {
+    print_hexadecimal_helper(num, count, uppercase);
+}
+
+void print_pointer(void *p_addr, int *count) {
     *count += _putchar('0');
     *count += _putchar('x');
-    print_hexadecimal((intptr_t) p_addr, count, 0);
+    print_hexadecimal_helper((unsigned long)p_addr, count, 0);
 }
 
 int _putchar(char c)
 {
-	return (write(1, &c, 1));
+    return (write(1, &c, 1));
 }
 
 int _printf(const char *format, ...)
