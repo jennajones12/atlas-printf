@@ -18,29 +18,31 @@ int _printf(const char *format, ...) {
                 case 's':
                     count += printf("%s", va_arg(args, const char *));
                     break;
-                case 'd':
-                case 'i':
-                    count += printf("%d", va_arg(args, int));
-                    break;
-                case 'u':
-                    count += printf("%u", va_arg(args, unsigned int));
-                    break;
-                case 'o':
-                    count += printf("%o", va_arg(args, unsigned int));
-                    break;
+		case 'd':
+		case 'i':
+		    count += printf("%d", va_arg(args, int));
+		    break;
+		case 'u':
+		    count += printf("%u", va_arg(args, unsigned int));
+		    break;
+		case 'o':
+		    count += printf("%o", va_arg(args, unsigned int));
+		    break;
                 case 'x':
-                case 'X':
                     count += printf("%x", va_arg(args, unsigned int));
                     break;
-                case 'p':
-                    count += printf("%p", va_arg(args, void *));
+                case 'X':
+                    count += printf("%X", va_arg(args, unsigned int));
                     break;
+		case 'p':
+		    count += printf("%p", va_arg(args, void *));
+		    break;
                 case '%':
                     putchar('%');
                     count++;
                     break;
                 default:
-                    putchar('%');
+		    putchar('%');
                     putchar(*format);
                     count += 2;
                     break;
@@ -55,4 +57,3 @@ int _printf(const char *format, ...) {
     va_end(args);
     return count;
 }
-
