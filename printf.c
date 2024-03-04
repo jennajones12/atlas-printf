@@ -21,7 +21,6 @@
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
-
 int _putchar(char c)
 {
 	return (write(1, &c, 1));
@@ -58,21 +57,19 @@ int _printf(const char *format, ...)
 			else if (c == 's')
 			{
 				str = va_arg(args, char *);
-				str = NULL;
 				if (str == NULL)
 				{
-					for (i = 0; null_str[i] != '\0'; i++)
+					for( i=0; null_str[i] != '\0'; i++)
 					{
 						_putchar(null_str[i]);
-						count++;
+						count ++;
 					}
 				}
 				else
 				{
-					while (*str != '\0')
+					while(*str != '\0')
 					{
-						_putchar(*str);
-						str++;
+						_putchar(*str++);
 						count++;
 					}
 				}
