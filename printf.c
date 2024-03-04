@@ -55,14 +55,11 @@ void print_hexadecimal(unsigned int num, int *count, int uppercase) {
     }
 }
 
-void print_pointer(void *p_addr, int *count) {
-    char *msg = "Address:[0x";
-    while (*msg != '\0') {
-        *count += _putchar(*msg);
-        msg++;
-    }
-    print_hexadecimal((unsigned long)p_addr, count, 0);
-    *count += _putchar(']');
+void print_pointer(void *p_addr, int *count)
+{
+    *count += _putchar('0');
+    *count += _putchar('x');
+    print_hexadecimal((intptr_t) p_addr, count, 0);
 }
 
 int _putchar(char c)
