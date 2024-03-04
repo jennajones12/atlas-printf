@@ -1,105 +1,52 @@
-#include <stdarg.h>
 #include <stdio.h>
-#include <stdint.h>
-#include <unistd.h>
-
-int _putchar(char c) {
-    return write(1, &c, 1);
-}
-
-void print_number_recursive(unsigned int num, unsigned int base, int *count, int uppercase) {
-    char digits[] = "0123456789abcdef";
-    if (uppercase) {
-        digits[10] = 'A';
-        digits[11] = 'B';
-        digits[12] = 'C';
-        digits[13] = 'D';
-        digits[14] = 'E';
-        digits[15] = 'F';
-    }
-
-    if (num >= base) {
-        print_number_recursive(num / base, base, count, uppercase);
-    }
-    *count += _putchar(digits[num % base]);
-}
-
-void print_number(unsigned int num, unsigned int base, int *count, int uppercase) {
-    if (num >= base) {
-        print_number_recursive(num / base, base, count, uppercase);
-    }
-    *count += _putchar("0123456789abcdef"[num % base]);
-}
-
-void print_pointer(void *p_addr, int *count) {
-    *count += _putchar('0');
-    *count += _putchar('x');
-    print_number((uintptr_t)p_addr, 16, count, 0);
-}
-
-void print_string(const char *str, int *count) {
-    if (str == NULL) {
-        str = "(null)";
-    }
-    while (*str != '\0') {
-        *count += _putchar(*str++);
-    }
-}
+#include <stdarg.h>
 
 int _printf(const char *format, ...) {
-    int count = 0;
     va_list args;
+    int count = 0;
+
     va_start(args, format);
 
-    while (*format != '\0') {
+    while (*format) {
         if (*format == '%') {
             format++;
-            if (*format == '\0') {
-                break;
+            switch (*format) {
+                case 'c':
+                    putchar(va_arg(args, int));
+                    count++;
+                    break;
+                case 's':
+                    count += printf("%s", va_arg(args, const char *));
+                    break;
+                case 'd':
+                case 'i':
+                    count += printf("%d", va_arg(args, int));
+                    break;
+                case 'u':
+                    count += printf("%u", va_arg(args, unsigned int));
+                    break;
+                case 'o':
+                    count += printf("%o", va_arg(args, unsigned int));
+                    break;
+                case 'x':
+                case 'X':
+                    count += printf("%x", va_arg(args, unsigned int));
+                    break;
+                case 'p':
+                    count += printf("%p", va_arg(args, void *));
+                    break;
+                case '%':
+                    putchar('%');
+                    count++;
+                    break;
+                default:
+                    putchar('%');
+                    putchar(*format);
+                    count += 2;
+                    break;
             }
-            else if (*format == 'c') {
-                _putchar(va_arg(args, int));
-                count++;
-            }
-            else if (*format == 's') {
-                print_string(va_arg(args, char *), &count);
-            }
-            else if (*format == 'd' || *format == 'i') {
-                int num = va_arg(args, int);
-                if (num < 0) {
-                    count += _putchar('-');
-                    num = -num;
-                }
-                print_number((unsigned int)num, 10, &count, 0);
-            }
-            else if (*format == 'u') {
-                unsigned int u_num = va_arg(args, unsigned int);
-                print_number(u_num, 10, &count, 0);
-            }
-            else if (*format == 'o') {
-                unsigned int o_num = va_arg(args, unsigned int);
-                print_number(o_num, 8, &count, 0);
-            }
-            else if (*format == 'x' || *format == 'X') {
-                unsigned int x_num = va_arg(args, unsigned int);
-                print_number(x_num, 16, &count, *format == 'X');
-            }
-            else if (*format == 'p') {
-                void *p_addr = va_arg(args, void *);
-                print_pointer(p_addr, &count);
-            }
-            else if (*format == '%') {
-                _putchar('%');
-                count++;
-            }
-            else {
-                _putchar('%');
-                _putchar(*format);
-                count += 2;
-            }
-        }
-        else {
-            _putchar(*format);
+        } else {
+            putchar(*format);
             count++;
         }
         format++;
@@ -108,3 +55,4 @@ int _printf(const char *format, ...) {
     va_end(args);
     return count;
 }
+
