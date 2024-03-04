@@ -65,13 +65,18 @@ void print_pointer(void *p_addr, int *count) {
     *count += _putchar(']');
 }
 
+int _putchar(char c)
+{
+	return (write(1, &c, 1));
+}
+
 int _printf(const char *format, ...)
 {
     int count;
     char c;
     va_list args;
     char *str;
-    int i, num, temp, digits;
+    int i, num;
     const char null_str[] = "(null)";
 
     count = 0;
