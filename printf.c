@@ -38,8 +38,8 @@ int _printf(const char *format, ...) {
 		case 'p':
 		    count += printf("%p", va_arg(args, void *));
 		    break;
-                case '%':
-                    putchar('%');
+                case '%': ;
+		   putchar('%');
                     count++;
                     break;
                 default:
