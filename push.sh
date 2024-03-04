@@ -1,7 +1,3 @@
-touch push.sh
-chmod +x push.sh
-vi push.sh
-
 #!/bin/bash
 
 echo "Enter Commit Message"
