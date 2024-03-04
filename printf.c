@@ -1,161 +1,108 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
-#include "main.h"
-#include <limits.h>
 
-/**
- * 
- * 
- *
- *
- * 
- */
-
-#include <unistd.h>
-void print_unsigned_int(unsigned int num, int *count) {
-    unsigned int temp = num;
-    int digits = 1;
-    while (temp /= 10) digits *= 10;
-    while (digits) {
-        *count += _putchar('0' + num / digits);
-        num %= digits;
-        digits /= 10;
-    }
+int _putchar(char c) {
+    return write(1, &c, 1);
 }
 
-void print_octal(unsigned int num, int *count) {
-    unsigned int temp = num;
-    int digits = 1;
-    while (temp /= 8) digits *= 8;
-    while (digits) {
-        *count += _putchar('0' + num / digits);
-        num %= digits;
-        digits /= 8;
+void print_number_recursive(unsigned int num, unsigned int base, int *count, int uppercase) {
+    char digits[] = "0123456789abcdef";
+    if (uppercase) {
+        digits[10] = 'A';
+        digits[11] = 'B';
+        digits[12] = 'C';
+        digits[13] = 'D';
+        digits[14] = 'E';
+        digits[15] = 'F';
     }
+
+    if (num >= base) {
+        print_number_recursive(num / base, base, count, uppercase);
+    }
+    *count += _putchar(digits[num % base]);
 }
 
-void print_hexadecimal_helper(unsigned long num, int *count, int uppercase) {
-    unsigned long temp = num;
-    int digits = 1;
-    while (temp /= 16) digits *= 16;
-    while (digits) {
-        int digit = num / digits;
-        *count += _putchar((digit < 10 ? '0' + digit : (uppercase ? 'A' + digit - 10 : 'a' + digit - 10)));
-        num %= digits;
-        digits /= 16;
+void print_number(unsigned int num, unsigned int base, int *count, int uppercase) {
+    if (num >= base) {
+        print_number_recursive(num / base, base, count, uppercase);
     }
-}
-
-void print_hexadecimal(unsigned int num, int *count, int uppercase) {
-    print_hexadecimal_helper(num, count, uppercase);
+    *count += _putchar("0123456789abcdef"[num % base]);
 }
 
 void print_pointer(void *p_addr, int *count) {
     *count += _putchar('0');
     *count += _putchar('x');
-    print_hexadecimal_helper((unsigned long)p_addr, count, 0);
+    print_number((uintptr_t)p_addr, 16, count, 0);
 }
 
-int _putchar(char c)
-{
-    return (write(1, &c, 1));
+void print_string(const char *str, int *count) {
+    if (str == NULL) {
+        str = "(null)";
+    }
+    while (*str != '\0') {
+        *count += _putchar(*str++);
+    }
 }
 
-int _printf(const char *format, ...)
-{
-    int count;
-    char c;
+int _printf(const char *format, ...) {
+    int count = 0;
     va_list args;
-    char *str;
-    int i, num;
-    const char null_str[] = "(null)";
-
-    count = 0;
     va_start(args, format);
 
-    if (format == NULL)
-        return (-1);
-
-    while ((c = *format++) != '\0')
-    {
-        if (c == '%')
-        {
-            c = *format++;
-            if (c == '\0')
-                return (count);
-            else if (c == 'c')
-            {
+    while (*format != '\0') {
+        if (*format == '%') {
+            format++;
+            if (*format == '\0') {
+                break;
+            }
+            else if (*format == 'c') {
                 _putchar(va_arg(args, int));
                 count++;
             }
-            else if (c == 's')
-            {
-                str = va_arg(args, char *);
-                if (str == NULL)
-                {
-                    for (i = 0; null_str[i] != '\0'; i++)
-                    {
-                        _putchar(null_str[i]);
-                        count++;
-                    }
-                }
-                else
-                {
-                    while (*str != '\0')
-                    {
-                        _putchar(*str++);
-                        count++;
-                    }
-                }
+            else if (*format == 's') {
+                print_string(va_arg(args, char *), &count);
             }
-            else if (c == 'd' || c == 'i')
-            {
-                num = va_arg(args, int);
-                if (num < 0)
-                {
+            else if (*format == 'd' || *format == 'i') {
+                int num = va_arg(args, int);
+                if (num < 0) {
                     count += _putchar('-');
                     num = -num;
                 }
-                print_unsigned_int(num, &count);
+                print_number((unsigned int)num, 10, &count, 0);
             }
-            else if (c == 'u')
-            {
+            else if (*format == 'u') {
                 unsigned int u_num = va_arg(args, unsigned int);
-                print_unsigned_int(u_num, &count);
+                print_number(u_num, 10, &count, 0);
             }
-            else if (c == 'o')
-            {
+            else if (*format == 'o') {
                 unsigned int o_num = va_arg(args, unsigned int);
-                print_octal(o_num, &count);
+                print_number(o_num, 8, &count, 0);
             }
-            else if (c == 'x' || c == 'X')
-            {
+            else if (*format == 'x' || *format == 'X') {
                 unsigned int x_num = va_arg(args, unsigned int);
-                print_hexadecimal(x_num, &count, c == 'X');
+                print_number(x_num, 16, &count, *format == 'X');
             }
-            else if (c == 'p')
-            {
+            else if (*format == 'p') {
                 void *p_addr = va_arg(args, void *);
                 print_pointer(p_addr, &count);
             }
-            else if (c == '%')
-            {
+            else if (*format == '%') {
                 _putchar('%');
                 count++;
             }
-            else
-            {
+            else {
                 _putchar('%');
-                _putchar(c);
+                _putchar(*format);
                 count += 2;
             }
         }
-        else
-        {
-            _putchar(c);
+        else {
+            _putchar(*format);
             count++;
         }
+        format++;
     }
 
     va_end(args);
