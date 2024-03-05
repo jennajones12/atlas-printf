@@ -1,50 +1,123 @@
-#include <stdio.h>
-#include <stddef.h>
 #include <stdarg.h>
+#include <limits.h>
+#include <unistd.h>
 #include "main.h"
 
-int _printf(const char *format, ...) 
-{
-    va_list args;
-    int count = 0;
+int _putchar(char c) {
+    return (write(1, &c, 1));
+}
 
+int _printf(const char *format, ...) {
+    int count;
+    char c;
+    va_list args;
+    char *str;
+    int i, num, temp, digits;
+    const char null_str[] = "(null)";
+
+    count = 0;
     va_start(args, format);
 
-    while (*format) {
-        if (*format == '%') 
-	{
-            format++;
-            switch (*format) 
-	    {
-                case 'c':
-                    count++;
-                    va_arg(args, int);
-                    break;
-                case 's':
-                    count += vsnprintf(NULL, 0, va_arg(args, const char *), args);
-                    break;
-		case 'd':
-		case 'i':
-		case 'u':
-		case 'o':
-		case 'x':
-		case 'X':
-		case 'p':
-                    count += vsnprintf(NULL, 0, "", args);
-                    break;
-                case '%':
-                    count++;
-                    break;
-                default:
-                    count += 2;
-                    break;
+    if (format == NULL)
+        return (-1);
+
+    while ((c = *format++) != '\0') {
+        unsigned int abs_num;
+        if (c == '%') {
+            c = *format++;
+            if (c == '\0')
+                return (count);
+            else if (c == 'c') {
+                _putchar(va_arg(args, int));
+                count++;
+            } else if (c == 's') {
+                str = va_arg(args, char *);
+                if (str == NULL) {
+                    for (i = 0; null_str[i] != '\0'; i++) {
+                        _putchar(null_str[i]);
+                        count++;
+                    }
+                } else {
+                    while (*str != '\0') {
+                        _putchar(*str++);
+                        count++;
+                    }
+                }
+            } else if (c == 'd' || c == 'i') {
+                num = va_arg(args, int);
+                if (num == INT_MIN) {
+                    count += _putchar('-');
+                    abs_num = (unsigned int)INT_MIN;
+                    temp = abs_num;
+                    digits = 1;
+                    while (temp /= 10) {
+                        digits *= 10;
+                    }
+                    while (digits) {
+                        count += _putchar('0' + num / digits);
+                        num %= digits;
+                        digits /= 10;
+                    }
+                } else if (num < 0) {
+                    count += _putchar('-');
+                    num = -num;
+                }
+                temp = num;
+                digits = 1;
+                while (temp /= 10)
+                    digits *= 10;
+                while (digits) {
+                    count += _putchar('0' + num / digits);
+                    num %= digits;
+                    digits /= 10;
+                }
+            } else if (c == 'u') {
+                unsigned int unsigned_num = va_arg(args, unsigned int);
+                temp = unsigned_num;
+                digits = 1;
+                while (temp /= 10)
+                    digits *= 10;
+                while (digits) {
+                    count += _putchar('0' + unsigned_num / digits);
+                    unsigned_num %= digits;
+                    digits /= 10;
+                }
+            } else if (c == 'o') {
+                unsigned int unsigned_num = va_arg(args, unsigned int);
+                temp = unsigned_num;
+                digits = 1;
+                while (temp /= 8)
+                    digits *= 8;
+                while (digits) {
+                    count += _putchar('0' + unsigned_num / digits);
+                    unsigned_num %= digits;
+                    digits /= 8;
+                }
+            } else if (c == 'x' || c == 'X') {
+                unsigned int unsigned_num = va_arg(args, unsigned int);
+                temp = unsigned_num;
+                digits = 1;
+                while (temp /= 16)
+                    digits *= 16;
+                while (digits) {
+                    int rem = unsigned_num / digits;
+                    count += _putchar(rem < 10 ? rem + '0' : (c == 'x' ? rem - 10 + 'a' : rem - 10 + 'A'));
+                    unsigned_num %= digits;
+                    digits /= 16;
+                }
+            } else if (c == '%') {
+                _putchar('%');
+                count++;
+            } else {
+                _putchar('%');
+                _putchar(c);
+                count += 2;
             }
         } else {
+            _putchar(c);
             count++;
         }
-        format++;
     }
-
     va_end(args);
     return count;
 }
