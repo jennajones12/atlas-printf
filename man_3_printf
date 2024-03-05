@@ -1,0 +1,46 @@
+.TH PRINTF 3 "March 2024" "User Commands"
+
+.SH NAME
+_printf \- Prints formatted data to stdout
+
+.SH SYNOPSIS
+.B #include <stdarg.h>
+.B #include <stdio.h>
+.B #include <unistd.h>
+.B #include <limits.h>
+.B #include "main.h"
+
+.I int _printf(const char *format, ...);
+
+.SH DESCRIPTION
+The \fI_printf\fP function prints formatted data to the standard output (usually the console screen). It takes a format string and additional arguments to be formatted according to the format specifier.
+
+.SH RETURN VALUE
+The function returns the number of characters printed (excluding the null byte used to end output) or -1 if an error occurs.
+
+.SH FORMAT SPECIFIERS
+The following format specifiers are supported:
+.IP %c
+Prints a single character.
+.IP %s
+Prints a string.
+.IP %d, %i
+Prints an integer.
+
+.SH EXAMPLE
+.B #include <stdio.h>
+.B int main() {
+.B     _printf("Hello, %s! Your lucky number is %d.\n", "Alice", 42);
+.B     return 0;
+.B }
+
+.SH SEE ALSO
+.B man 3 printf
+.B man 3 fprintf
+.B man 3 sprintf
+
+.SH NOTES
+This man page was generated for educational purposes. For official documentation, refer to the C library documentation.
+
+.SH AUTHOR
+Written by Jonathon Lazenby and Jenna Jones
