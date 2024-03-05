@@ -27,56 +27,57 @@ int _putchar(char c)
 
 int _printf(const char *format, ...)
 {
-	int count;
-	char c;
-	va_list args;
-	char *str;
-	int i, num, temp, digits;
-	const char null_str[] = "(null)";
+	int count; /* Variable to keep track of output length */
+	char c; /* Alias for Format, makes it convenient to refer also format can stay in original form */
+	va_list args;/* Variable to keep track of output length */
+	char *str; /* String pointer to manage when c = 's' */
+	int i, num, temp, digits; /* Variables to manage int printing when c = 'd' or 'i' */
+	const char null_str[]; "(null)";/* Tried this variable to resolve use case of '%' differe length issue */
+	unsigned int abs_num;  /* Used to resolve the INT_MIN issue using unsigned int type casting */ 
 
-	count = 0;
+	count = 0; /* Initialize count and start variable arguments */
 	va_start(args, format);
 
-	if (format == NULL)
+	if (format == NULL) /* Check if the format string is NULL, tried to resolve differe length issue */
 		return (-1);
 
-	 while ((c = *format++) != '\0')
+	 while ((c = *format++) != '\0') /* Loop through the format string until reach end of line */
 	 {
 		 unsigned int abs_num;
-		 if (c == '%')
+		 if (c == '%') /* Check for format specifier '%' */
 		 {
-			 c = *format++;
-			 if (c == '\0')
+			 c = *format++; /*increment c by one position to start printing characters in the string proceeding "%" */
+			 if (c == '\0') /* return current count of end of line */
 				 return (count);
-			 else if (c == 'c')
+			 else if (c == 'c')  /* check if c = 'c', and print (using _putchar) the character */
 			 {
 				 _putchar(va_arg(args, int));
 				 count++;
 			 }
-			 else if (c == 's')
+			 else if (c == 's') /* Check if c= 's' */
 			 {
 				 str = va_arg(args, char *);
-				 if (str == NULL)
+				 if (str == NULL)  /* Print "(null)" if the string is NULL, tried this for differ length issue */
 				 {
 					 for (i = 0; null_str[i] != '\0'; i++)
 					 {
-						 _putchar(null_str[i]);
+						 _putchar(null_str[i]);  
 						 count++;
 					 }
 				 }
 				 else
 				 {
-					 while (*str != '\0')
+					 while (*str != '\0') /* traverse over the string and print each character */
 					 {
 						 _putchar(*str++);
 						 count++;
 					 }
 				 }
 			 }
-			 else if (c == 'd' || c == 'i')
+			 else if (c == 'd' || c == 'i')  /* Handle integer specifiers 'd' and 'i', this section of code is for questions 1 d and i */
 			 {
 				 num = va_arg(args, int);
-				 if (num == INT_MIN)
+				 if (num == INT_MIN) /* Handle INT_MIN separately */
 				 {
 					 count += _putchar('-');
 					 abs_num = (unsigned int)INT_MIN;
@@ -93,16 +94,16 @@ int _printf(const char *format, ...)
 						 digits /= 10;
 					 }
 				 }
-				 else if (num < 0)
+				 else if (num < 0) /* if number is negative, print a '-' character and then make the rest of the number positive by mulitiplying with -, rest will remain same as positive numbers*/
 				 {
-					 count += _putchar('-');
+					 count += _putchar('-'); /* Handle negative numbers */
 					 num = -num;
 				 }
 				 temp = num;
 				 digits = 1;
 				 while (temp /= 10)
 					 digits *= 10;
-				 while (digits)
+				 while (digits) /* remove each digit from a number using division and modula operations, by quotient and remiander rule */
 				 {
 					 count += _putchar('0' + num / digits);
 					 num %= digits;
@@ -175,26 +176,24 @@ int _printf(const char *format, ...)
 					 }
 				 }
 			 }
-			 else if (c == '%')
+			 else if (c == '%') /* Handle '%' specifier */
 			 {
 				 _putchar('%');
 				 count++;
 			 }
-			 else
+			 else /* Handle unknown specifier, print '%' */
 			 {
 				 _putchar('%');
 				 _putchar(c);
-				 count += 2;
+				 count += 2; /* increment by 2 because this will be a '%%' case */
 			 }
 		 }
-		 else
+		 else /*  Print non-format characters */
 		 {
 			 _putchar(c);
 			 count++;
 		 }
 	 }
-	 va_end(args);
+	 va_end(args); /* End variable arguments */
 	 return count;
 }
-
-
