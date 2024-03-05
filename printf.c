@@ -1,5 +1,6 @@
-#include <stdarg.h>
 #include <limits.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include <unistd.h>
 #include "main.h"
 
@@ -104,6 +105,22 @@ int _printf(const char *format, ...) {
                     count += _putchar(rem < 10 ? rem + '0' : (c == 'x' ? rem - 10 + 'a' : rem - 10 + 'A'));
                     unsigned_num %= digits;
                     digits /= 16;
+                }
+            } else if (c == 'p') {
+                void *ptr = va_arg(args, void *);
+                char *p;
+                if (ptr == NULL) {
+                    const char *null_ptr_str = "(nil)";
+                    while (*null_ptr_str != '\0') {
+                        count += _putchar(*null_ptr_str++);
+                    }
+                } else {
+                    char buffer[20];
+                    snprintf(buffer, sizeof(buffer), "%p", ptr);
+                    p = buffer;
+                    while (*p != '\0') {
+                        count += _putchar(*p++);
+                    }
                 }
             } else if (c == '%') {
                 _putchar('%');
